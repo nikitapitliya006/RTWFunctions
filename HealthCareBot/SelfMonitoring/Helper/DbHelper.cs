@@ -15,8 +15,6 @@ namespace SelfMonitoring.Helper
         public static async Task<bool> PostDataAsync<T>(ExecutionContext contex, T model, string ops)
         {
             string sqlStr = null;
-
-            //Dictionary<string, string> colcollection = new Dictionary<string, string>();
             switch (ops)
             {
 
@@ -181,10 +179,7 @@ namespace SelfMonitoring.Helper
                         " '" + typeof(T).GetProperty("TeamsCallInitiated").GetValue(model) + "'," +
                         " '" + typeof(T).GetProperty("TeamsCallCompleted").GetValue(model) + "')";
                     break;
-
-
             }
-
             bool datainserted = await InsertData(contex, sqlStr);
             return datainserted;
         }
@@ -197,11 +192,7 @@ namespace SelfMonitoring.Helper
                     .AddEnvironmentVariables()
                     .Build();
 
-
-            //var appSettingValue = config["appSettingKey"];
             var conStr = config["SqlConnectionString"];
-            // var conStr = "Server=tcp:contosohealthsystem.database.windows.net,1433;Initial Catalog=RtwTest;Persist Security Info=False;User ID=contoso;Password=Pass@word1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-
             try
             {
                 using (var conn = new SqlConnection(conStr))
@@ -219,7 +210,6 @@ namespace SelfMonitoring.Helper
             }
             catch (Exception)
             {
-
                 return false;
             }
         }
@@ -231,9 +221,6 @@ namespace SelfMonitoring.Helper
                     .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                     .AddEnvironmentVariables()
                     .Build();
-
-            //var connParameter = "SqlConnectionString";
-            //string conStr = config.GetConnectionString($"{connParameter}");
 
             var conStr = config["SqlConnectionString"];
 
@@ -274,12 +261,6 @@ namespace SelfMonitoring.Helper
                             }
                         }
                         return (T)Convert.ChangeType(userInfo, typeof(T));
-                        //else
-                        //{
-                        //    return new HttpResponseMessage(HttpStatusCode.NotFound);
-                        //}
-
-
                     }
 
                 case Constants.getScreeningInfo:
@@ -407,8 +388,58 @@ namespace SelfMonitoring.Helper
                         return (T)Convert.ChangeType(ListqData, typeof(T));
                     }
             }
+        }
 
+        public static async Task<bool> GetTeamsAddress(ExecutionContext context, List<string> memberList, List<TeamsAddressQuarantineInfo> teamsAddressQuarantineInfoCollector)
+        {
+            var config = new ConfigurationBuilder()
+                    .SetBasePath(context.FunctionAppDirectory)
+                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
 
+            var conStr = config["SqlConnectionString"];
+
+            using (SqlConnection conn = new SqlConnection(conStr))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand();
+                SqlDataReader reader;
+
+                var sql_query = "select ui.UserId, ui.TeamsAddress, si.QuarantineRequired from UserInfo as ui left join ScreeningInfo as si on(si.UserId = ui.UserId) where ui.UserId IN(";
+                for (int i = 0; i < memberList.Count - 1; i++)
+                {
+                    sql_query = sql_query + "'" + memberList[i] + "',";
+                }
+                sql_query = sql_query + "'" + memberList[memberList.Count - 1] + "')";
+                //var sql_conditions = ") AND si.QuarantineRequired = 0";
+                //cmd.CommandText = "SELECT TeamsAddress FROM UserInfo where UserId = " + "'" + UserId + "'";
+                cmd.CommandText = sql_query;
+                cmd.Connection = conn;
+
+                reader = cmd.ExecuteReader();
+                if (reader != null)
+                {
+                    while (reader.Read())
+                    {
+                        TeamsAddressQuarantineInfo teamsAddressQuarantineInfo = new TeamsAddressQuarantineInfo();
+                        teamsAddressQuarantineInfo.UserId = reader["UserId"].ToString();
+                        teamsAddressQuarantineInfo.TeamsAddress = reader["TeamsAddress"].ToString();
+
+                        if (reader.IsDBNull("QuarantineRequired"))
+                        {
+                            teamsAddressQuarantineInfo.QuarantineRequired = false;
+                        }
+                        else
+                        {
+                            teamsAddressQuarantineInfo.QuarantineRequired = (bool)reader["QuarantineRequired"];
+                        }
+                        teamsAddressQuarantineInfoCollector.Add(teamsAddressQuarantineInfo);
+                    }
+                    return true;
+                }
+                return false;
+            }
         }
     }
 }

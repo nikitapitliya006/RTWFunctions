@@ -18,6 +18,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using SelfMonitoring.Helper;
+using SelfMonitoring.Model;
 
 namespace SelfMonitoring
 {
@@ -30,51 +32,47 @@ namespace SelfMonitoring
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            //log.LogInformation("C# HTTP trigger function processed a request.");
-
             string name = req.Query["name"];
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             name = name ?? data?.name;
             
-            GraphServiceClient graphClient = GetAuthenticatedGraphClient();            
+            GraphServiceClient graphClient = GetAuthenticatedGraphClient();
 
-            string groupId = "a72cc7c9-1bbe-42fc-8ddb-60e5aad2dccb";
-            
-            List<string> groupList = new List<string>();
-            for (int i = 0; i < groupList.Count; i++)
-            {
-                //groupMembers = await graphClient.Groups[groupList[i]].Members.Request().GetAsync();
-            }
-            //var groupMembers = await graphClient.Groups["a72cc7c9-1bbe-42fc-8ddb-60e5aad2dccb"].Members.Request().GetAsync();
-            var groupMembers = await graphClient.Groups[groupId].Members.Request().GetAsync();
+            //To-do: Convert below code to get memberList from List of Group IDs
+            //List<string> groupList = new List<string>();
+            //for (int i = 0; i < groupList.Count; i++)
+            //{
+            //    
+            //}
 
+            string groupId = System.Environment.GetEnvironmentVariable("GroupId", EnvironmentVariableTarget.Process);
             List<string> memberList = new List<string>();
-            for (int i = 0; i < groupMembers.Count; i++)
+            try
             {
-                memberList.Add(groupMembers.CurrentPage[i].Id);
+                var groupMembers = await graphClient.Groups[groupId].Members.Request().GetAsync();
+                PageIterator<DirectoryObject> groupMemberPageIterator = PageIterator<DirectoryObject>.CreatePageIterator(
+                  graphClient,
+                  groupMembers,
+                  entity => { memberList.Add(entity.Id); return true; });
+                await groupMemberPageIterator.IterateAsync();
+            }
+            catch (Exception ex)
+            {
+                memberList = null;
             }
 
-            //To-do: Build SQL string with dynamic list of memberIDs - Get all TeamsAddress using single sql query
-            //var sql_1 = "select ui.UserId, ui.TeamsAddress, si.QuarantineRequired from UserInfo as ui left join ScreeningInfo as si on(si.UserId = ui.UserId) where ui.UserId IN(";
-            //var sql_2 = '1612a50c-c637-4f41-ba32-9f1bd1c5aead','4dbcaaa2-3258-4917-bcea-4049981dc704'
-            //var sql_3 = ") AND si.QuarantineRequired = 0"
-
-            //Calling Azure function to get UserInfo table details 
-            List<string> teamsAddressList = new List<string>();
-            for (int i = 0; i < memberList.Count; i++)
+            //TCheck: backend DB = FHIR or Azure SQL
+            string SqlConnectionString = Environment.GetEnvironmentVariable("SqlConnectionString");
+            if(SqlConnectionString != null)
             {
-                string address1 = GetTeamsAddressForEachUser(memberList[i]);
-                teamsAddressList.Add(address1);
+                GetTeamsAddressFromSqlAndPostTrigger(memberList);
             }
-
-            //Post Trigger covid19_screen scenario
-            foreach (var addr in teamsAddressList)
+            else
             {
-                PostScreenTrigger(addr);
-            }
-
+                GetTeamsAddressFromFhirAndPostTrigger(memberList);
+            } 
+            
             string responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
@@ -82,10 +80,35 @@ namespace SelfMonitoring
             return new OkObjectResult(responseMessage);
         }
 
+        private static async void GetTeamsAddressFromSqlAndPostTrigger(List<string> members)
+        {
+            ////Get Teams Address 
+            //List<TeamsAddressQuarantineInfo> teamsAddressQuarantineInfoCollector = new List<TeamsAddressQuarantineInfo>();
+            //bool result = await DbHelper.GetTeamsAddress(context, members, teamsAddressQuarantineInfoCollector);
+            //Console.WriteLine(JsonConvert.SerializeObject(teamsAddressQuarantineInfoCollector));
+
+            ////Post Trigger "screen" scenario
+            //foreach (var element in teamsAddressQuarantineInfoCollector)
+            //{
+            //    PostScreenTrigger(element.TeamsAddress);
+            //}
+        }
+
+        private static void GetTeamsAddressFromFhirAndPostTrigger(List<string> members)
+        {
+            ////Get Teams Address
+
+            ////Post Trigger "screen" scenario
+            //foreach (var element in teamsAddressQuarantineInfoCollector)
+            //{
+            //    PostScreenTrigger(element.TeamsAddress);
+            //}
+        }
+
+        #region PostTrigger with Jwttoken
         static async void PostScreenTrigger(string teamsAddress)
         {
-            const string URL = "https://bot-us.healthbot.microsoft.com/api/tenants/contosohealthsystemteamsbot-g4ubxvv/beginScenario";
-            
+            string URL = System.Environment.GetEnvironmentVariable("Healthbot_Trigger_Call", EnvironmentVariableTarget.Process);
             string token = "";
 
             HttpClient client = new HttpClient();
@@ -94,50 +117,37 @@ namespace SelfMonitoring
             //Add an Authorization Bearer token (jwt token)
             string partial_token = GetJwtToken();
             token = "Bearer " + partial_token;
-
-            //token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnROYW1lIjoiY29udG9zb2hlYWx0aGJvdC1pamhtamR5IiwiaWF0IjoxNTg4NDkwOTcxfQ.cIiM7BbiaY3oF1eDqMMiSFGgaaXteyZu1yk-E36Ucmw";
             client.DefaultRequestHeaders.Add("Authorization", token);
 
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             //Add body parameter
-            var payload = "{\"address\":" + teamsAddress + ",\"scenario\": \"/scenarios/screen\"}";
+            //var payload = "{\"address\":" + teamsAddress + ",\"scenario\": \"/scenarios/screen\"}";
+            string scenarioId = System.Environment.GetEnvironmentVariable("Healthbot_ScenarioId", EnvironmentVariableTarget.Process);
+            var payload = "{\"address\":" + teamsAddress + ",\"scenario\": \"/scenarios/" + scenarioId + "\"}";
             HttpContent content = new StringContent(payload, Encoding.UTF8, "application/json");
 
             // List data response.
             HttpResponseMessage response = await client.PostAsync(URL, content);
             
-            if (response.IsSuccessStatusCode)
-            {
-                
-            }
-            else
-            {
+            if (!response.IsSuccessStatusCode)
+            { 
                 Console.WriteLine("{0})", (int)response.StatusCode);
             }
-
-            //Dispose once all HttpClient calls are complete. This is not necessary if the containing object will be disposed of; for example in this case the HttpClient instance will be disposed automatically when the application terminates so the following call is superfluous.
             client.Dispose();
-
-        }
-
-        #region jwttoken
+        }        
         
         public static string GetJwtToken()
         {
-            var healthbot_API_JWT_SECRET = "0e55744e1c921be33ab9020ab38e9bf80bb29ad7b60188424b89b0614ccb5271";
+            var healthbot_API_JWT_SECRET = System.Environment.GetEnvironmentVariable("Healthbot_API_JWT_SECRET", EnvironmentVariableTarget.Process);
+            var healthbot_Tenant_Name = System.Environment.GetEnvironmentVariable("Healthbot_Tenant_Name", EnvironmentVariableTarget.Process);
             TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
             int secondsSinceEpoch = (int)t.TotalSeconds;
 
-            // An alternative option is used here
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(healthbot_API_JWT_SECRET));
-            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-
-            //  Finally create a Token
+            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);           
             var header = new JwtHeader(signingCredentials);
-
-            //Some PayLoad that contain information about the  customer
             var payload = new JwtPayload
             {
                { "tenantName", "contosohealthsystemteamsbot-g4ubxvv"},
@@ -147,51 +157,13 @@ namespace SelfMonitoring
             var secToken = new JwtSecurityToken(header, payload);
             var handler = new JwtSecurityTokenHandler();
 
-            // Token to String so you can use it in your client
             var tokenString = handler.WriteToken(secToken);
-            //Console.WriteLine("\nEncoded: \n" + tokenString);
-
-            //var decodedToken = handler.ReadToken(tokenString);
-            //Console.WriteLine("\nDecoded: \n" + decodedToken);
-
             return tokenString;
         }
 
         #endregion
-        private static string GetTeamsAddressForEachUser(string memberID)
-        {
-            const string URL = "https://selfmonitoring.azurewebsites.net/api/GetUserInfo/";
-            //string userID = memberID;
-            string userID = "1612a50c-c637-4f41-ba32-9f1bd1c5aead";
-            string teamsAddress = "todo";
 
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(URL);
-
-            // Add an Accept header for JSON format.
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-
-            // List data response.
-            HttpResponseMessage response = client.GetAsync(userID).Result;  // Blocking call! Program will wait here until a response is received or a timeout occurs.
-            if (response.IsSuccessStatusCode)
-            {
-                // Parse the response body                
-                var jsonString = response.Content.ReadAsStringAsync();
-                jsonString.Wait();
-                teamsAddress = JsonConvert.DeserializeObject<Model.UserInfo>(jsonString.Result).TeamsAddress;
-            }
-            else
-            {
-                Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
-            }
-            client.Dispose();
-
-            //To-do: Return a list of member's Teams Address from DB
-
-            return teamsAddress;
-        }
-
+        #region Graph SDK functions
         private static GraphServiceClient GetAuthenticatedGraphClient()
         {
             var authenticationProvider = CreateAuthorizationProvider();
@@ -217,7 +189,8 @@ namespace SelfMonitoring
                                               .WithClientSecret(clientSecret)
                                               .Build();
 
-            return new Helper.MsalAuthenticationProvider(cca, scopes.ToArray());
+            return new MsalAuthenticationProvider(cca, scopes.ToArray());
         }
+        #endregion
     }
 }
