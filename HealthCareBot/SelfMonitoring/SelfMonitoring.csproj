@@ -10,6 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Helper\SavePatientData.cs" />
+    <Compile Remove="TriggerScenario.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
