@@ -27,7 +27,7 @@ namespace SelfMonitoring
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
-            UserInfo userInfo = await DbHelper.GetDataAsync<UserInfo>(context, Constants.getUserInfo, UserId);           
+            UserInfo userInfo = await DbHelper.GetDataAsync<UserInfo>(Constants.getUserInfo, UserId);           
 
             log.LogInformation(JsonConvert.SerializeObject(userInfo));
 

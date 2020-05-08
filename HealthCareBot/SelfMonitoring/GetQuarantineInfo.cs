@@ -38,8 +38,7 @@ namespace SelfMonitoring
 
             var conStr = config["SqlConnectionString"];
 
-            List<QuarantineInfo> ListqData = await DbHelper.GetDataAsync<List<QuarantineInfo>>(context, 
-                                                                                                Constants.getQuarantineInfo, UserId);
+            List<QuarantineInfo> ListqData = await DbHelper.GetDataAsync<List<QuarantineInfo>>(Constants.getQuarantineInfo, UserId);
             
             if (ListqData == null)
             {

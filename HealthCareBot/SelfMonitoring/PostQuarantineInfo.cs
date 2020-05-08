@@ -28,7 +28,7 @@ namespace SelfMonitoring
                     return new HttpResponseMessage(HttpStatusCode.BadRequest);
                 }
 
-                bool dataRecorded = await DbHelper.PostDataAsync(context, quarantineInfo, Constants.postQuarantineInfo);
+                bool dataRecorded = await DbHelper.PostDataAsync(quarantineInfo, Constants.postQuarantineInfo);
 
                 if (dataRecorded)
                 {

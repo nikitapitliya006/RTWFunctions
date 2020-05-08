@@ -29,9 +29,7 @@ namespace SelfMonitoring
             }
 
 
-            ScreeningInfo screeningInfo = await DbHelper.GetDataAsync<ScreeningInfo>(context,
-                                                                                     Constants.getScreeningInfo,
-                                                                                     UserId);
+            ScreeningInfo screeningInfo = await DbHelper.GetDataAsync<ScreeningInfo>(Constants.getScreeningInfo, UserId);
             
             if (screeningInfo == null)
             {

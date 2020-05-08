@@ -29,7 +29,7 @@ namespace SelfMonitoring
             }
 
 
-            UserUnderlyingInfo userUnderlyingInfo = await DbHelper.GetDataAsync<UserUnderlyingInfo>(context,
+            UserUnderlyingInfo userUnderlyingInfo = await DbHelper.GetDataAsync<UserUnderlyingInfo>(
                                                                                      Constants.getUserUnderlyingInfo,
                                                                                      UserId);
             

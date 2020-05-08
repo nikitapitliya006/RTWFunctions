@@ -12,12 +12,11 @@ namespace SelfMonitoring.Helper
     public class DbHelper
     {
         //for data insertion write condition to check if data for that user exist or not
-        public static async Task<bool> PostDataAsync<T>(ExecutionContext contex, T model, string ops)
+        public static async Task<bool> PostDataAsync<T>(T model, string ops)
         {
             string sqlStr = null;
             switch (ops)
             {
-
                 case Constants.postUserInfo:
                     sqlStr = "Insert into[dbo].[UserInfo] " +
                         "([UserId], " +
@@ -180,19 +179,13 @@ namespace SelfMonitoring.Helper
                         " '" + typeof(T).GetProperty("TeamsCallCompleted").GetValue(model) + "')";
                     break;
             }
-            bool datainserted = await InsertData(contex, sqlStr);
+            bool datainserted = await InsertData(sqlStr);
             return datainserted;
         }
 
-        private static async Task<bool> InsertData(ExecutionContext context, string sqlStr)
+        private static async Task<bool> InsertData(string sqlStr)
         {
-            var config = new ConfigurationBuilder()
-                    .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
-
-            var conStr = config["SqlConnectionString"];
+            var conStr = System.Environment.GetEnvironmentVariable("SqlConnectionString", EnvironmentVariableTarget.Process);
             try
             {
                 using (var conn = new SqlConnection(conStr))
@@ -214,15 +207,9 @@ namespace SelfMonitoring.Helper
             }
         }
 
-        public static async Task<T> GetDataAsync<T>(ExecutionContext context, string ops, string paramString)
+        public static async Task<T> GetDataAsync<T>(string ops, string paramString)
         {
-            var config = new ConfigurationBuilder()
-                    .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
-
-            var conStr = config["SqlConnectionString"];
+            var conStr = System.Environment.GetEnvironmentVariable("SqlConnectionString", EnvironmentVariableTarget.Process);
 
             switch (ops)
             {
@@ -390,15 +377,9 @@ namespace SelfMonitoring.Helper
             }
         }
 
-        public static async Task<bool> GetTeamsAddress(ExecutionContext context, List<string> memberList, List<TeamsAddressQuarantineInfo> teamsAddressQuarantineInfoCollector)
-        {
-            var config = new ConfigurationBuilder()
-                    .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
-
-            var conStr = config["SqlConnectionString"];
+        public static async Task<bool> GetTeamsAddress(List<string> memberList, List<TeamsAddressQuarantineInfo> teamsAddressQuarantineInfoCollector)
+        {            
+            var conStr = System.Environment.GetEnvironmentVariable("SqlConnectionString", EnvironmentVariableTarget.Process);
 
             using (SqlConnection conn = new SqlConnection(conStr))
             {
