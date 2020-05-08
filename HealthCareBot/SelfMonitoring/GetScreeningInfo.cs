@@ -19,23 +19,18 @@ namespace SelfMonitoring
     {
         [FunctionName("GetScreeningInfo")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetScreeningInfo/{UserId}")] HttpRequest req, string UserId,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetScreeningInfo/{UserId}")] HttpRequest req, string UserId,
             ILogger log, ExecutionContext context)
-        {
-            //Guid pID = patientID;
+        {           
             if (UserId == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
-
-
-            ScreeningInfo screeningInfo = await DbHelper.GetDataAsync<ScreeningInfo>(Constants.getScreeningInfo, UserId);
-            
+            ScreeningInfo screeningInfo = await DbHelper.GetDataAsync<ScreeningInfo>(Constants.getScreeningInfo, UserId);            
             if (screeningInfo == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
-
             log.LogInformation(JsonConvert.SerializeObject(screeningInfo));
 
             return new HttpResponseMessage(HttpStatusCode.OK)

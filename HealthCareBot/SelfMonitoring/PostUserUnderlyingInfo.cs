@@ -17,18 +17,15 @@ namespace SelfMonitoring
     {
         [FunctionName("PostUserUnderlyingInfo")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequestMessage req,
             ILogger log, ExecutionContext context)
         {
-
             UserUnderlyingInfo userUnderlyingInfo = await req.Content.ReadAsAsync<UserUnderlyingInfo>();
             if (userUnderlyingInfo == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
-
             bool dataRecorded = await DbHelper.PostDataAsync(userUnderlyingInfo, Constants.postUserUnderlyingInfo);
-
             if (dataRecorded)
             {
                 log.LogInformation("Data recorded...");

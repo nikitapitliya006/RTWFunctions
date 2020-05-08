@@ -22,7 +22,7 @@ namespace SelfMonitoring
     {
         [FunctionName("GetQuarantineInfo")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetQuarantineInfo/{UserId}")] HttpRequest req, string UserId,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetQuarantineInfo/{UserId}")] HttpRequest req, string UserId,
             ILogger log, ExecutionContext context)
         {
             if (UserId == null)

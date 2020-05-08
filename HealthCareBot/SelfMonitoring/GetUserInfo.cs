@@ -19,7 +19,7 @@ namespace SelfMonitoring
     {
         [FunctionName("GetUserInfo")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetUserInfo/{UserId}")] HttpRequest req, string UserId,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetUserInfo/{UserId}")] HttpRequest req, string UserId,
             ILogger log, ExecutionContext context)
         {
             if (UserId == null)

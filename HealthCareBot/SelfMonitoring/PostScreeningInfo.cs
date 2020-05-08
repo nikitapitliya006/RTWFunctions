@@ -17,10 +17,9 @@ namespace SelfMonitoring
     {
         [FunctionName("PostScreeningInfo")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestMessage req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequestMessage req,
             ILogger log, ExecutionContext context)
         {
-
             ScreeningInfo screeningInfo = await req.Content.ReadAsAsync<ScreeningInfo>();
             if (screeningInfo == null)
             {

@@ -78,8 +78,7 @@ namespace SelfMonitoring
             var redirectUri = System.Environment.GetEnvironmentVariable("AzureADAppRedirectUri", EnvironmentVariableTarget.Process);
             var tenantId = System.Environment.GetEnvironmentVariable("AzureADAppTenantId", EnvironmentVariableTarget.Process);
             var authority = $"https://login.microsoftonline.com/{tenantId}/v2.0";
-
-            //this specific scope means that application will default to what is defined in the application registration rather than using dynamic scopes
+            
             List<string> scopes = new List<string>();
             scopes.Add("https://graph.microsoft.com/.default");
 

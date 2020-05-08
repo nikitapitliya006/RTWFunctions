@@ -19,7 +19,7 @@ namespace SelfMonitoring
     {
         [FunctionName("GetUserUnderlyingInfo")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetUserUnderlyingInfo/{UserId}")] HttpRequest req, string UserId,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetUserUnderlyingInfo/{UserId}")] HttpRequest req, string UserId,
             ILogger log, ExecutionContext context)
         {
             //Guid pID = patientID;

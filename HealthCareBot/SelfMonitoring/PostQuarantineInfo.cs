@@ -17,7 +17,7 @@ namespace SelfMonitoring
     {
         [FunctionName("PostQuarantineInfo")]
         public static async Task<HttpResponseMessage> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpResponseMessage req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpResponseMessage req,
             ILogger log, ExecutionContext context)
         {
             try
@@ -42,10 +42,8 @@ namespace SelfMonitoring
             }
             catch (Exception ex)
             {
-
                 throw ex;
-            }
-            
+            }            
         }
     }
 }
