@@ -27,14 +27,23 @@ namespace SelfMonitoring
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
-            UserInfo userInfo = await DbHelper.GetDataAsync<UserInfo>(Constants.getUserInfo, UserId);           
-
-            log.LogInformation(JsonConvert.SerializeObject(userInfo));
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
+            try
             {
-                Content = new StringContent(JsonConvert.SerializeObject(userInfo), Encoding.UTF8, "application/json")
-            };
+
+                UserInfo userInfo = await DbHelper.GetDataAsync<UserInfo>(Constants.getUserInfo, UserId);
+
+                log.LogInformation(JsonConvert.SerializeObject(userInfo));
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(userInfo), Encoding.UTF8, "application/json")
+                };
+            }
+            catch(System.Exception ex)
+            {
+                log.LogInformation(ex.Message);
+                return null;
+            }
         }
     }
 }

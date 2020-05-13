@@ -30,27 +30,35 @@ namespace SelfMonitoring
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
-            var config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            var conStr = config["SqlConnectionString"];
-
-            List<QuarantineInfo> ListqData = await DbHelper.GetDataAsync<List<QuarantineInfo>>(Constants.getQuarantineInfo, UserId);
-            
-            if (ListqData == null)
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                var config = new ConfigurationBuilder()
+                    .SetBasePath(context.FunctionAppDirectory)
+                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+
+                var conStr = config["SqlConnectionString"];
+
+                List<QuarantineInfo> ListqData = await DbHelper.GetDataAsync<List<QuarantineInfo>>(Constants.getQuarantineInfo, UserId);
+
+                if (ListqData == null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.NotFound);
+                }
+
+                log.LogInformation(JsonConvert.SerializeObject(ListqData));
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(ListqData), Encoding.UTF8, "application/json")
+                };
             }
-
-            log.LogInformation(JsonConvert.SerializeObject(ListqData));
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
+            catch(System.Exception ex)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(ListqData), Encoding.UTF8, "application/json")
-            };
+                log.LogInformation(ex.Message);
+                return null;
+            }
         }
     }
 }

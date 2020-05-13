@@ -54,32 +54,6 @@ namespace SelfMonitoring.Helper
                         "'" + typeof(T).GetProperty("TwilioAddress").GetValue(model) + "')";
                     break;
 
-                case Constants.postUserUnderlyingInfo:
-                    sqlStr = "Insert into[dbo].[UserUnderlyingInfo] " +
-                        "([UserId], " +
-                        "[HeartDisease], " +
-                        "[Asthma], " +
-                        "[LungProblems], " +
-                        "[Cancer], " +
-                        "[Diabetes], " +
-                        "[Chemotherapy], " +
-                        "[Arthritis], " +
-                        "[isThermometerHandy], " +
-                        "[isO2SatMonitorHandy], " +
-                        "values" +
-                        "('" + typeof(T).GetProperty("UserId").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("HeartDisease").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("Asthma").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("LastName").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("LungProblems").GetValue(model) + "'," +
-                        "" + typeof(T).GetProperty("Cancer").GetValue(model) + ", " +
-                        "'" + typeof(T).GetProperty("Diabetes").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("Chemotherapy").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("Arthritis").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("isThermometerHandy").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("isO2SatMonitorHandy").GetValue(model) + "')";
-                    break;
-
                 case Constants.postScreeningInfo:
                     sqlStr = "Insert into [dbo].[ScreeningInfo]" +
                         " ([UserId], " +
@@ -94,7 +68,7 @@ namespace SelfMonitoring.Helper
                         "[SymptomFever], " +
                         "[SymptomShortnessOfBreath], " +
                         "[SymptomCough], " +
-                        "[SymotomRunningNose], " +
+                        "[SymptomRunningNose], " +
                         "[SymptomSoreThroat], " +
                         "[SymptomChills], " +
                         "[SymptomDizziness], " +
@@ -115,11 +89,12 @@ namespace SelfMonitoring.Helper
                         "'" + typeof(T).GetProperty("SymptomFever").GetValue(model) + "', " +
                         "'" + typeof(T).GetProperty("SymptomShortnessOfBreath").GetValue(model) + "', " +
                         "'" + typeof(T).GetProperty("SymptomCough").GetValue(model) + "', " +
-                        "'" + typeof(T).GetProperty("SymotomRunningNose").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("SymptomSoreThroat").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomRunningNose").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomSoreThroat").GetValue(model) + "', " +
                         "'" + typeof(T).GetProperty("SymptomChills").GetValue(model) + "', " +
                         "'" + typeof(T).GetProperty("SymptomDizziness").GetValue(model) + "', " +
                         "'" + typeof(T).GetProperty("SymptomAbdomenPain").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomOther").GetValue(model) + "', " +
                         "'" + typeof(T).GetProperty("GUID").GetValue(model) + "', " +
                         "'" + typeof(T).GetProperty("QuarantineRequired").GetValue(model) + "')";
                     break;
@@ -128,14 +103,14 @@ namespace SelfMonitoring.Helper
                     sqlStr = "Insert into [dbo].[QuarantineInfo] " +
                         "([UserId], " +
                         "[Cycle], " +
-                        "[QuarStartDate], " +
+                         "[QuarStartDate], " +
                         "[QuarMidpointDate], " +
                         "[QuarEndDate], " +
                         "[DateOfEntry], " +
                         "[SymptomFever], " +
                         "[SymptomShortnessOfBreath], " +
                         "[SymptomCough], " +
-                        "[SymotomRunningNose], " +
+                         "[SymptomRunningNose], " +
                         "[SymptomSoreThroat], " +
                         "[SymptomChills], " +
                         "[SymptomDizziness], " +
@@ -153,30 +128,54 @@ namespace SelfMonitoring.Helper
                         "[TeamsCallCompleted]) " +
                         "values" +
                         "('" + typeof(T).GetProperty("UserId").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("Cycle").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("QuarStartDate").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("QuarMidpointDate").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("QuarEndDate").GetValue(model) + "'," +
-                        " " + typeof(T).GetProperty("DateOfEntry").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomFever").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomShortnessOfBreath").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomCough").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymotomRunningNose").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomSoreThroat").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomChills").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomDizziness").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomAbdomenPain").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomDiarrhea").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomFatigue").GetValue(model) + "," +
-                        " " + typeof(T).GetProperty("SymptomOther").GetValue(model) + "," +
-                        " '" + typeof(T).GetProperty("Temperature").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("O2Saturation").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("AntibodyTestDate").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("AntibodyTestResult").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("RequestRTW").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("ApprovalRTW").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("TeamsCallInitiated").GetValue(model) + "'," +
-                        " '" + typeof(T).GetProperty("TeamsCallCompleted").GetValue(model) + "')";
+                        " " + typeof(T).GetProperty("Cycle").GetValue(model) + "," +
+                        "'" + typeof(T).GetProperty("QuarStartDate").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("QuarMidpointDate").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("QuarEndDate").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("DateOfEntry").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomFever").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomShortnessOfBreath").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomCough").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomRunningNose").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomSoreThroat").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomChills").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomDizziness").GetValue(model) + "'," +
+                        " '" + typeof(T).GetProperty("SymptomAbdomenPain").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomDiarrhea").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("SymptomFatigue").GetValue(model) + "', " +
+                         "'" + typeof(T).GetProperty("SymptomOther").GetValue(model) + "', " +
+                        "" + typeof(T).GetProperty("Temperature").GetValue(model) + ", " +
+                        "" + typeof(T).GetProperty("O2Saturation").GetValue(model) + ", " +
+                        "'" + typeof(T).GetProperty("AntibodyTestDate").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("AntibodyTestResult").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("RequestRTW").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("ApprovalRTW").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("TeamsCallInitiated").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("TeamsCallCompleted").GetValue(model) + "')";
+                    break;
+                case Constants.postUserUnderlyingInfo:
+                    sqlStr = "Insert into[dbo].[UserUnderlyingInfo] " +
+                        "([UserId], " +
+                        "[HeartDisease], " +
+                        "[Asthma], " +
+                        "[LungProblems], " +
+                        "[Cancer], " +
+                        "[Diabetes], " +
+                        "[Chemotherapy], " +
+                        "[Arthritis], " +
+                        "[isThermometerHandy], " +
+                        "[isO2SatMonitorHandy]) " +
+                        "values" +
+                        "('" + typeof(T).GetProperty("UserId").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("HeartDisease").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("Asthma").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("LungProblems").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("Cancer").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("Diabetes").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("Chemotherapy").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("Arthritis").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("isThermometerHandy").GetValue(model) + "', " +
+                        "'" + typeof(T).GetProperty("isO2SatMonitorHandy").GetValue(model) + "')";
                     break;
             }
             bool datainserted = await InsertData(sqlStr);
@@ -244,7 +243,7 @@ namespace SelfMonitoring.Helper
                                 userInfo.StreetAddress1 = reader["Country"].ToString();
                                 userInfo.StreetAddress1 = reader["ZipCode"].ToString();
                                 userInfo.TeamsAddress = reader["TeamsAddress"].ToString();
-                                userInfo.TwilioAddress = reader["TwilioAddress"].ToString();                                
+                                userInfo.TwilioAddress = reader["TwilioAddress"].ToString();
                             }
                         }
                         return (T)Convert.ChangeType(userInfo, typeof(T));
@@ -278,7 +277,7 @@ namespace SelfMonitoring.Helper
                                 screeningInfo.SymptomFever = (bool)reader["SymptomFever"];
                                 screeningInfo.SymptomShortnessOfBreath = (bool)reader["SymptomShortnessOfBreath"];
                                 screeningInfo.SymptomCough = (bool)reader["SymptomCough"];
-                                screeningInfo.SymotomRunningNose = (bool)reader["SymotomRunningNose"];
+                                screeningInfo.SymptomRunningNose = (bool)reader["SymptomRunningNose"];
                                 screeningInfo.SymptomSoreThroat = (bool)reader["SymptomSoreThroat"];
                                 screeningInfo.SymptomChills = (bool)reader["SymptomChills"];
                                 screeningInfo.SymptomDizziness = (bool)reader["SymptomDizziness"];
@@ -378,7 +377,7 @@ namespace SelfMonitoring.Helper
         }
 
         public static async Task<bool> GetTeamsAddress(List<string> memberList, List<TeamsAddressQuarantineInfo> teamsAddressQuarantineInfoCollector)
-        {            
+        {
             var conStr = System.Environment.GetEnvironmentVariable("SqlConnectionString", EnvironmentVariableTarget.Process);
 
             using (SqlConnection conn = new SqlConnection(conStr))

@@ -18,7 +18,7 @@ namespace SelfMonitoring.Model
         public bool SymptomFever { get; set; }
         public bool SymptomShortnessOfBreath { get; set; }
         public bool SymptomCough { get; set; }
-        public bool SymotomRunningNose { get; set; }
+        public bool SymptomRunningNose { get; set; }
         public bool SymptomSoreThroat { get; set; }
         public bool SymptomChills { get; set; }
         public bool SymptomDizziness { get; set; }

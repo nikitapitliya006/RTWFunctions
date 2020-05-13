@@ -20,21 +20,29 @@ namespace SelfMonitoring
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequestMessage req,
             ILogger log, ExecutionContext context)
         {
-            UserUnderlyingInfo userUnderlyingInfo = await req.Content.ReadAsAsync<UserUnderlyingInfo>();
-            if (userUnderlyingInfo == null)
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                UserUnderlyingInfo userUnderlyingInfo = await req.Content.ReadAsAsync<UserUnderlyingInfo>();
+                if (userUnderlyingInfo == null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                }
+                bool dataRecorded = await DbHelper.PostDataAsync(userUnderlyingInfo, Constants.postUserUnderlyingInfo);
+                if (dataRecorded)
+                {
+                    log.LogInformation("Data recorded");
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                }
+                else
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                }
             }
-            bool dataRecorded = await DbHelper.PostDataAsync(userUnderlyingInfo, Constants.postUserUnderlyingInfo);
-            if (dataRecorded)
+            catch(System.Exception ex)
             {
-                log.LogInformation("Data recorded...");
-                return new HttpResponseMessage(HttpStatusCode.OK);
+                log.LogInformation(ex.Message);
+                return null;
             }
-            else
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }            
         }
     }
 }

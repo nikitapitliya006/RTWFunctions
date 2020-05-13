@@ -26,17 +26,26 @@ namespace SelfMonitoring
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
-            ScreeningInfo screeningInfo = await DbHelper.GetDataAsync<ScreeningInfo>(Constants.getScreeningInfo, UserId);            
-            if (screeningInfo == null)
-            {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
-            }
-            log.LogInformation(JsonConvert.SerializeObject(screeningInfo));
 
-            return new HttpResponseMessage(HttpStatusCode.OK)
+            try
             {
-                Content = new StringContent(JsonConvert.SerializeObject(screeningInfo), Encoding.UTF8, "application/json")
-            };
+                ScreeningInfo screeningInfo = await DbHelper.GetDataAsync<ScreeningInfo>(Constants.getScreeningInfo, UserId);
+                if (screeningInfo == null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.NotFound);
+                }
+                log.LogInformation(JsonConvert.SerializeObject(screeningInfo));
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(screeningInfo), Encoding.UTF8, "application/json")
+                };
+            }
+            catch (System.Exception ex)
+            {
+                log.LogInformation(ex.Message);
+                return null;
+            }
         }
     }
 }

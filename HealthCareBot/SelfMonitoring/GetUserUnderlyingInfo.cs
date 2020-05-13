@@ -22,28 +22,35 @@ namespace SelfMonitoring
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetUserUnderlyingInfo/{UserId}")] HttpRequest req, string UserId,
             ILogger log, ExecutionContext context)
         {
-            //Guid pID = patientID;
+            
             if (UserId == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 
-
-            UserUnderlyingInfo userUnderlyingInfo = await DbHelper.GetDataAsync<UserUnderlyingInfo>(
-                                                                                     Constants.getUserUnderlyingInfo,
-                                                                                     UserId);
-            
-            if (userUnderlyingInfo == null)
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                UserUnderlyingInfo userUnderlyingInfo = await DbHelper.GetDataAsync<UserUnderlyingInfo>(
+                                                                                         Constants.getUserUnderlyingInfo,
+                                                                                         UserId);
+
+                if (userUnderlyingInfo == null)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.NotFound);
+                }
+
+                log.LogInformation(JsonConvert.SerializeObject(userUnderlyingInfo));
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(userUnderlyingInfo), Encoding.UTF8, "application/json")
+                };
             }
-
-            log.LogInformation(JsonConvert.SerializeObject(userUnderlyingInfo));
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
+            catch(System.Exception ex)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(userUnderlyingInfo), Encoding.UTF8, "application/json")
-            };
+                log.LogInformation(ex.Message);
+                return null;
+            }
         }
     }
 }
