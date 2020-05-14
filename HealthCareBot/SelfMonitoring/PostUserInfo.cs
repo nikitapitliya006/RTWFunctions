@@ -32,7 +32,7 @@ namespace SelfMonitoring
 
                 if (dataRecorded)
                 {
-                    log.LogInformation("Data recorded...");
+                    log.LogInformation("Data recorded");
                     return new HttpResponseMessage(HttpStatusCode.OK);
                 }
                 else

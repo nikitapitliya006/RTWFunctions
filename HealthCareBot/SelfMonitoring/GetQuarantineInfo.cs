@@ -32,13 +32,13 @@ namespace SelfMonitoring
 
             try
             {
-                var config = new ConfigurationBuilder()
-                    .SetBasePath(context.FunctionAppDirectory)
-                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                    .AddEnvironmentVariables()
-                    .Build();
+                //var config = new ConfigurationBuilder()
+                //    .SetBasePath(context.FunctionAppDirectory)
+                //    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                //    .AddEnvironmentVariables()
+                //    .Build();
 
-                var conStr = config["SqlConnectionString"];
+                //var conStr = config["SqlConnectionString"];
 
                 List<QuarantineInfo> ListqData = await DbHelper.GetDataAsync<List<QuarantineInfo>>(Constants.getQuarantineInfo, UserId);
 

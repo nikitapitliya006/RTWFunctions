@@ -250,13 +250,14 @@ namespace SelfMonitoring.Helper
                     }
 
                 case Constants.getScreeningInfo:
-                    ScreeningInfo screeningInfo = new ScreeningInfo();
+                    
                     using (SqlConnection conn = new SqlConnection(conStr))
                     {
                         conn.Open();
                         SqlCommand cmd = new SqlCommand();
                         SqlDataReader reader;
 
+                        List<ScreeningInfo> lstScreenInfo = new List<ScreeningInfo>();
                         cmd.CommandText = "SELECT * FROM ScreeningInfo where UserId = " + "'" + paramString + "'";
                         cmd.Connection = conn;
 
@@ -265,29 +266,31 @@ namespace SelfMonitoring.Helper
                         {
                             while (reader.Read())
                             {
+                                ScreeningInfo screeningInfo = new ScreeningInfo();
                                 screeningInfo.UserId = reader["UserId"].ToString();
                                 screeningInfo.DateOfEntry = reader["DateOfEntry"].ToString();
-                                screeningInfo.UserExposed = (bool)reader["UserExposed"];
-                                screeningInfo.ExposureDirect = (bool)reader["ExposureDirect"];
-                                screeningInfo.ExposureIndirect = (bool)reader["ExposureIndirect"];
-                                screeningInfo.ExposureMultiple = (bool)reader["ExposureMultiple"];
-                                screeningInfo.ExposureNotsure = (bool)reader["ExposureNotsure"];
+                                screeningInfo.UserExposed = DBNull.Value.Equals(reader["UserExposed"]) ? false : (bool)reader["UserExposed"];
+                                screeningInfo.ExposureDirect = DBNull.Value.Equals(reader["ExposureDirect"]) ? false : (bool)reader["ExposureDirect"];
+                                screeningInfo.ExposureIndirect = DBNull.Value.Equals(reader["ExposureIndirect"]) ? false : (bool)reader["ExposureIndirect"];
+                                screeningInfo.ExposureMultiple = DBNull.Value.Equals(reader["ExposureMultiple"]) ? false : (bool)reader["ExposureMultiple"];
+                                screeningInfo.ExposureNotsure = DBNull.Value.Equals(reader["ExposureNotsure"]) ? false : (bool)reader["ExposureNotsure"];
                                 screeningInfo.ExposureDate = reader["ExposureDate"].ToString();
-                                screeningInfo.SymptomsYesNo = (bool)reader["SymptomsYesNo"];
-                                screeningInfo.SymptomFever = (bool)reader["SymptomFever"];
-                                screeningInfo.SymptomShortnessOfBreath = (bool)reader["SymptomShortnessOfBreath"];
-                                screeningInfo.SymptomCough = (bool)reader["SymptomCough"];
-                                screeningInfo.SymptomRunningNose = (bool)reader["SymptomRunningNose"];
-                                screeningInfo.SymptomSoreThroat = (bool)reader["SymptomSoreThroat"];
-                                screeningInfo.SymptomChills = (bool)reader["SymptomChills"];
-                                screeningInfo.SymptomDizziness = (bool)reader["SymptomDizziness"];
-                                screeningInfo.SymptomAbdomenPain = (bool)reader["SymptomAbdomenPain"];
+                                screeningInfo.SymptomsYesNo = DBNull.Value.Equals(reader["SymptomsYesNo"]) ? false : (bool)reader["SymptomsYesNo"];
+                                screeningInfo.SymptomFever = DBNull.Value.Equals(reader["SymptomFever"]) ? false : (bool)reader["SymptomFever"];
+                                screeningInfo.SymptomShortnessOfBreath = DBNull.Value.Equals(reader["ExposureDirect"]) ? false : (bool)reader["SymptomShortnessOfBreath"];
+                                screeningInfo.SymptomCough = DBNull.Value.Equals(reader["SymptomShortnessOfBreath"]) ? false : (bool)reader["SymptomCough"];
+                                screeningInfo.SymptomRunningNose = DBNull.Value.Equals(reader["SymptomRunningNose"]) ? false : (bool)reader["SymptomRunningNose"];
+                                screeningInfo.SymptomSoreThroat = DBNull.Value.Equals(reader["SymptomSoreThroat"]) ? false : (bool)reader["SymptomSoreThroat"];
+                                screeningInfo.SymptomChills = DBNull.Value.Equals(reader["SymptomChills"]) ? false : (bool)reader["SymptomChills"];
+                                screeningInfo.SymptomDizziness = DBNull.Value.Equals(reader["SymptomDizziness"]) ? false : (bool)reader["SymptomDizziness"];
+                                screeningInfo.SymptomAbdomenPain = DBNull.Value.Equals(reader["SymptomAbdomenPain"]) ? false : (bool)reader["SymptomAbdomenPain"];
                                 screeningInfo.SymptomOther = reader["SymptomOther"].ToString();
                                 screeningInfo.GUID = reader["GUID"].ToString();
-                                screeningInfo.QuarantineRequired = (bool)reader["QuarantineRequired"];
+                                screeningInfo.QuarantineRequired = DBNull.Value.Equals(reader["QuarantineRequired"]) ? false : (bool)reader["QuarantineRequired"];
+                                lstScreenInfo.Add(screeningInfo);
                             }
                         }
-                        return (T)Convert.ChangeType(screeningInfo, typeof(T));
+                        return (T)Convert.ChangeType(lstScreenInfo, typeof(T));
                     }
 
                 case Constants.getUserUnderlyingInfo:
@@ -307,15 +310,15 @@ namespace SelfMonitoring.Helper
                             while (reader.Read())
                             {
                                 userUnderlyingInfo.UserId = reader["UserId"].ToString();
-                                userUnderlyingInfo.HeartDisease = (bool)reader["HeartDisease"];
-                                userUnderlyingInfo.Asthma = (bool)reader["Asthma"];
-                                userUnderlyingInfo.LungProblems = (bool)reader["LungProblems"];
-                                userUnderlyingInfo.Cancer = (bool)reader["Cancer"];
-                                userUnderlyingInfo.Diabetes = (bool)reader["Diabetes"];
-                                userUnderlyingInfo.Chemotherapy = (bool)reader["Chemotherapy"];
-                                userUnderlyingInfo.Arthritis = (bool)reader["Arthritis"];
-                                userUnderlyingInfo.isThermometerHandy = (bool)reader["isThermometerHandy"];
-                                userUnderlyingInfo.isO2SatMonitorHandy = (bool)reader["isO2SatMonitorHandy"];
+                                userUnderlyingInfo.HeartDisease = DBNull.Value.Equals(reader["HeartDisease"]) ? false : (bool)reader["HeartDisease"];
+                                userUnderlyingInfo.Asthma = DBNull.Value.Equals(reader["Asthma"]) ? false : (bool)reader["Asthma"];
+                                userUnderlyingInfo.LungProblems = DBNull.Value.Equals(reader["LungProblems"]) ? false : (bool)reader["LungProblems"];
+                                userUnderlyingInfo.Cancer = DBNull.Value.Equals(reader["Cancer"]) ? false : (bool)reader["Cancer"];
+                                userUnderlyingInfo.Diabetes = DBNull.Value.Equals(reader["Diabetes"]) ? false : (bool)reader["Diabetes"];
+                                userUnderlyingInfo.Chemotherapy = DBNull.Value.Equals(reader["Chemotherapy"]) ? false : (bool)reader["Chemotherapy"];
+                                userUnderlyingInfo.Arthritis = DBNull.Value.Equals(reader["Arthritis"]) ? false : (bool)reader["Arthritis"];
+                                userUnderlyingInfo.isThermometerHandy = DBNull.Value.Equals(reader["isThermometerHandy"]) ? false : (bool)reader["isThermometerHandy"];
+                                userUnderlyingInfo.isO2SatMonitorHandy = DBNull.Value.Equals(reader["isO2SatMonitorHandy"]) ? false : (bool)reader["isO2SatMonitorHandy"];
                             }
                         }
                         return (T)Convert.ChangeType(userUnderlyingInfo, typeof(T));
@@ -323,7 +326,6 @@ namespace SelfMonitoring.Helper
 
                 default:
                     QuarantineInfo quarantineInfo = new QuarantineInfo();
-
                     List<QuarantineInfo> ListqData = new List<QuarantineInfo>();
 
                     using (SqlConnection conn = new SqlConnection(conStr))
@@ -343,30 +345,30 @@ namespace SelfMonitoring.Helper
                             {
                                 QuarantineInfo qData = new QuarantineInfo();
                                 qData.UserId = reader["UserId"].ToString();
-                                qData.Cycle = (int)reader["Cycle"];
+                                qData.Cycle = DBNull.Value.Equals(reader["Cycle"]) ? 0 : (int)reader["Cycle"];
                                 qData.QuarStartDate = reader["QuarStartDate"].ToString();
                                 qData.QuarMidpointDate = reader["QuarMidpointDate"].ToString();
                                 qData.QuarEndDate = reader["QuarEndDate"].ToString();
                                 qData.DateOfEntry = reader["DateOfEntry"].ToString();
-                                qData.SymptomFever = (bool)reader["SymptomFever"];
-                                qData.SymptomShortnessOfBreath = (bool)reader["SymptomShortnessOfBreath"];
-                                qData.SymptomCough = (bool)reader["SymptomCough"];
-                                qData.SymptomRunningNose = (bool)reader["SymptomRunningNose"];
-                                qData.SymptomSoreThroat = (bool)reader["SymptomSoreThroat"];
-                                qData.SymptomChills = (bool)reader["SymptomChills"];
-                                qData.SymptomDizziness = (bool)reader["SymptomDizziness"];
-                                qData.SymptomAbdomenPain = (bool)reader["SymptomAbdomenPain"];
-                                qData.SymptomDiarrhea = (bool)reader["SymptomDiarrhea"];
-                                qData.SymptomFatigue = (bool)reader["SymptomFatigue"];
+                                qData.SymptomFever = DBNull.Value.Equals(reader["SymptomFever"]) ? false : (bool)reader["SymptomFever"];
+                                qData.SymptomShortnessOfBreath = DBNull.Value.Equals(reader["SymptomShortnessOfBreath"]) ? false : (bool)reader["SymptomShortnessOfBreath"];
+                                qData.SymptomCough = DBNull.Value.Equals(reader["SymptomCough"]) ? false : (bool)reader["SymptomCough"];
+                                qData.SymptomRunningNose = DBNull.Value.Equals(reader["SymptomRunningNose"]) ? false : (bool)reader["SymptomRunningNose"];
+                                qData.SymptomSoreThroat = DBNull.Value.Equals(reader["SymptomSoreThroat"]) ? false : (bool)reader["SymptomSoreThroat"];
+                                qData.SymptomChills = DBNull.Value.Equals(reader["SymptomChills"]) ? false : (bool)reader["SymptomChills"];
+                                qData.SymptomDizziness = DBNull.Value.Equals(reader["SymptomDizziness"]) ? false : (bool)reader["SymptomDizziness"];
+                                qData.SymptomAbdomenPain = DBNull.Value.Equals(reader["SymptomAbdomenPain"]) ? false : (bool)reader["SymptomAbdomenPain"];
+                                qData.SymptomDiarrhea = DBNull.Value.Equals(reader["SymptomDiarrhea"]) ? false : (bool)reader["SymptomDiarrhea"];
+                                qData.SymptomFatigue = DBNull.Value.Equals(reader["SymptomFatigue"]) ? false : (bool)reader["SymptomFatigue"];
                                 qData.SymptomOther = reader["SymptomOther"].ToString();
-                                qData.Temperature = (decimal)reader["Temperature"];
-                                qData.O2Saturation = (decimal)reader["O2Saturation"];
+                                qData.Temperature = DBNull.Value.Equals(reader["Temperature"]) ? 0 : (decimal)reader["Temperature"];
+                                qData.O2Saturation = DBNull.Value.Equals(reader["O2Saturation"]) ? 0 : (decimal)reader["O2Saturation"];
                                 qData.AntibodyTestDate = reader["AntibodyTestDate"].ToString();
-                                qData.AntibodyTestResult = (bool)reader["AntibodyTestResult"];
+                                qData.AntibodyTestResult = DBNull.Value.Equals(reader["AntibodyTestResult"]) ? false : (bool)reader["AntibodyTestResult"];
                                 qData.RequestRTW = reader["RequestRTW"].ToString();
-                                qData.ApprovalRTW = (bool)reader["ApprovalRTW"];
-                                qData.TeamsCallInitiated = (bool)reader["TeamsCallInitiated"];
-                                qData.TeamsCallCompleted = (bool)reader["TeamsCallCompleted"];
+                                qData.ApprovalRTW = DBNull.Value.Equals(reader["ApprovalRTW"]) ? false : (bool)reader["ApprovalRTW"];
+                                qData.TeamsCallInitiated = DBNull.Value.Equals(reader["TeamsCallInitiated"]) ? false : (bool)reader["TeamsCallInitiated"];
+                                qData.TeamsCallCompleted = DBNull.Value.Equals(reader["TeamsCallCompleted"]) ? false : (bool)reader["TeamsCallCompleted"];
 
                                 ListqData.Add(qData);
                             }

@@ -12,6 +12,7 @@ using System.Data.SqlClient;
 using System.Text;
 using SelfMonitoring.Helper;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace SelfMonitoring
 {
@@ -29,7 +30,7 @@ namespace SelfMonitoring
 
             try
             {
-                ScreeningInfo screeningInfo = await DbHelper.GetDataAsync<ScreeningInfo>(Constants.getScreeningInfo, UserId);
+                List<ScreeningInfo> screeningInfo = await DbHelper.GetDataAsync<List<ScreeningInfo>>(Constants.getScreeningInfo, UserId);
                 if (screeningInfo == null)
                 {
                     return new HttpResponseMessage(HttpStatusCode.NotFound);
